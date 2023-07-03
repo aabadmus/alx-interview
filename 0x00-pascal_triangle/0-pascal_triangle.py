@@ -1,9 +1,15 @@
-def pascal_trianle(n):
+#!/usr/bin/python3
+
+"""
+Pascal Triangle
+"""
+
+def pascal_triangle(n):
 	if n <= 0:
 		return []
 
 	triangle = [[1]]
-	for i in range (i, n):
+	for i in range (1, n):
 		prev_row = triangle[i - 1]
 		curr_row = [1]
 		for j in range (i - 1):
