@@ -1,48 +1,45 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
+
+"""Script that reads stdin line by line and computes metrics"""
 
 import sys
-from collections import defaultdict
 
-def print_statistics(total_size, status_counts):
-    print(f"File size: {total_size}")
-    for status_code in sorted(status_counts.keys()):
-        count = status_counts[status_code]
-        print(f"{status_code}: {count}")
 
-def main():
-    total_size = 0
-    status_counts = defaultdict(int)
-    lines_processed = 0
+def printsts(dic, size):
+    """ WWPrints information """
+    print("File size: {:d}".format(size))
+    for i in sorted(dic.keys()):
+        if dic[i] != 0:
+            print("{}: {:d}".format(i, dic[i]))
 
-    try:
-        for line in sys.stdin:
-            line = line.strip()
-            parts = line.split()
-            if len(parts) != 9:
-                # Skip lines with incorrect format
-                continue
 
-            _, _, _, _, _, status_code, file_size = parts
+sts = {"200": 0, "301": 0, "400": 0, "401": 0, "403": 0,
+       "404": 0, "405": 0, "500": 0}
 
-            try:
-                status_code = int(status_code)
-                file_size = int(file_size)
-            except ValueError:
-                # Skip lines with non-integer status code or file size
-                continue
+count = 0
+size = 0
 
-            total_size += file_size
-            status_counts[status_code] += 1
-            lines_processed += 1
+try:
+    for line in sys.stdin:
+        if count != 0 and count % 10 == 0:
+            printsts(sts, size)
 
-            if lines_processed % 10 == 0:
-                print_statistics(total_size, status_counts)
+        stlist = line.split()
+        count += 1
 
-    except KeyboardInterrupt:
-        # If CTRL + C is pressed, print the current statistics
-        print_statistics(total_size, status_counts)
-        sys.exit(0)
+        try:
+            size += int(stlist[-1])
+        except:
+            pass
 
-if __name__ == "__main__":
-    main()
+        try:
+            if stlist[-2] in sts:
+                sts[stlist[-2]] += 1
+        except:
+            pass
+    printsts(sts, size)
 
+
+except KeyboardInterrupt:
+    printsts(sts, size)
+    raise
